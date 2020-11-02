@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const passport = require('passport')
 const createError = require('http-errors');
 
 module.exports.create = (req, res, next) => {
@@ -14,6 +15,31 @@ module.exports.create = (req, res, next) => {
   user.save()
     .then((user) => res.status(201).json(user))
     .catch(next)
+}
+
+module.exports.profile = (req, res, next) => {
+  User.findById(req.currentUser.id)
+    .then(user => {
+      if (user) {
+        res.json(user)
+      } else {
+        throw createError(404, 'user not found');
+      }
+    })
+    .catch(next)
+}
+
+module.exports.doSocialLogin = (req, res, next) => {
+  const passportController = passport.authenticate("slack", (error, user) => {
+    if (error) {
+      next(error);
+    } else {
+      req.session.user = user;
+      res.redirect(`${process.env.WEB_URL}/social-auth/cb`);
+    }
+  })
+  
+  passportController(req, res, next);
 }
 
 module.exports.doLogin = (req, res, next) => {

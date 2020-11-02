@@ -13,8 +13,10 @@ router.post('/tweets/:id/comments', authMiddleware.isAuthenticated, tweetsContro
 router.post('/tweets/:id/like', authMiddleware.isAuthenticated, tweetsController.like)
 router.post('/tweets', authMiddleware.isAuthenticated, upload.single('image'), tweetsController.create)
 
+router.get('/profile', authMiddleware.isAuthenticated, usersController.profile)
 router.post('/users', authMiddleware.isNotAuthenticated, upload.single('avatar'), usersController.create)
 router.get('/users/:username', authMiddleware.isAuthenticated, tweetsController.profile)
 
+router.get('/auth/slack', authMiddleware.isNotAuthenticated, usersController.doSocialLogin);
 router.post('/login', authMiddleware.isNotAuthenticated, usersController.doLogin)
 router.post('/logout', authMiddleware.isAuthenticated, usersController.logout)
